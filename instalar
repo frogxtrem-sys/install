@@ -1,0 +1,9 @@
+pkg update -y && pkg upgrade -y && pkg install python git wget -y && \
+pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio --no-cache-dir && \
+mkdir -p ~/apks && cd ~/apks && \
+for i in {1..4}; do 
+  wget -q https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk && \
+  su -c "pm install -r $PWD/clone$i.apk"; 
+done && \
+cd ~ && git clone https://github.com/frogxtrem-sys/principal && \
+cd principal && python 2main.py
