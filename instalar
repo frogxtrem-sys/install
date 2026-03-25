@@ -19,4 +19,5 @@ cd ~
 rm -rf principal  # Remove a pasta antiga se existir
 git clone https://github.com/frogxtrem-sys/principal
 cd principal
-python 2main.py
+
+python 2main.py < /dev/tty
