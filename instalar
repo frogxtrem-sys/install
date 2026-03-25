@@ -16,12 +16,23 @@ mkdir -p ~/downloads_apks && cd ~/downloads_apks
 echo "🚀 Iniciando Download e Instalação Turbo..."
 
 for i in {1..4}; do
-    # O '&' no final de cada comando faz eles rodarem ao MESMO TEMPO
-    (wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" && su -c "pm install -r clone$i.apk") &
+    # O '&' faz baixar e instalar em paralelo
+    (
+        # 1. Baixa o APK
+        wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -O "clone$i.apk"
+        
+        # 2. Move para uma pasta que o Android 'enxerga' (O segredo está aqui)
+        su -c "cp ~/downloads_apks/clone$i.apk /data/local/tmp/clone$i.apk"
+        
+        # 3. Instala a partir de lá
+        su -c "pm install -r /data/local/tmp/clone$i.apk"
+        
+        # 4. Limpa o rastro para não encher o disco
+        su -c "rm /data/local/tmp/clone$i.apk"
+    ) &
 done
 
-# Espera os processos de fundo terminarem antes de seguir para o Python
-wait 
+wait
 
 # 5. Baixa o seu projeto e roda
 cd ~
