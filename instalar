@@ -1,34 +1,35 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# 1. Configurações de Sistema (Root)
-# Otimiza DPI, Animações e desativa verificador de apps de uma vez
-su -c "settings put global verifier_verify_adb_installs 0; settings put global package_verifier_enable 0; wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0; settings put global animator_duration_scale 0.0" &
+# 1. Ajustes de Sistema (DPI e Animações)
+su -c "wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0; settings put global animator_duration_scale 0.0"
 
-# 2. Instala dependências básicas
+# 2. Instala dependências (Silencioso)
 pkg update -y && pkg upgrade -y
 pkg install python git wget openssl python-psutil -y
 pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio pyotp --no-cache-dir
 
-# 3. Download e Instalação Turbo (Blindada)
+# 3. Instalação dos Clones (Um por um para evitar erros)
 mkdir -p ~/downloads_apks && cd ~/downloads_apks
 
-echo "🚀 Iniciando Instalação Universal..."
+echo "🚀 Iniciando Instalação Segura..."
 
 for i in {1..4}; do
-    (
-        # Baixa o APK
-        wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -O "clone$i.apk"
-        
-        # O PULO DO GATO: Copia, dá permissão total e instala
-        # Usamos o 'cat' para garantir que o arquivo seja criado pelo ROOT na pasta tmp
-        su -c "cat clone$i.apk > /data/local/tmp/clone$i.apk"
-        su -c "chmod 777 /data/local/tmp/clone$i.apk"
-        su -c "pm install -r /data/local/tmp/clone$i.apk"
-        su -c "rm /data/local/tmp/clone$i.apk"
-    ) &
+    echo "📦 Processando Clone $i..."
+    
+    # Baixa
+    wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -O "clone$i.apk"
+    
+    # Garante que o Android consiga ler o arquivo (O essencial para qualquer Cloud)
+    su -c "cp clone$i.apk /data/local/tmp/clone$i.apk"
+    su -c "chmod 777 /data/local/tmp/clone$i.apk"
+    
+    # Instala
+    su -c "pm install -r /data/local/tmp/clone$i.apk"
+    
+    # Limpa o temporário
+    su -c "rm /data/local/tmp/clone$i.apk"
+    rm "clone$i.apk"
 done
-
-wait # Espera as 4 instalações terminarem
 
 # 4. Atualiza o projeto e roda
 cd ~
@@ -36,5 +37,5 @@ rm -rf principal
 git clone https://github.com/frogxtrem-sys/principal
 cd principal
 
-# Roda o python (su -c evita o erro de permissão no /proc/stat que deu no VMOS)
+# Roda o Python como root para evitar erro de permissão no /proc/stat
 su -c "python 2main.py" < /dev/tty
