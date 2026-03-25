@@ -1,22 +1,31 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# Atualiza e instala o básico
+# 1. Otimizações de Sistema (Root) - Roda em background para não travar
+su -c "settings put global verifier_verify_adb_installs 0; settings put global package_verifier_enable 0; wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0; settings put global animator_duration_scale 0.0" &
+
+# 2. Atualiza e instala o básico (Rápido)
 pkg update -y && pkg upgrade -y
 pkg install python git wget openssl python-psutil -y
 
-# Instala bibliotecas (incluindo o gerador de códigos pyotp)
+# 3. Instala bibliotecas Python
 pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio pyotp --no-cache-dir
 
-# Baixa e instala os 4 clones (usando Root)
+# 4. Baixa e instala os 4 clones SIMULTANEAMENTE
 mkdir -p ~/downloads_apks && cd ~/downloads_apks
+
+echo "🚀 Iniciando Download e Instalação Turbo..."
+
 for i in {1..4}; do
-    wget -q https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk
-    su -c "pm install -r $PWD/clone$i.apk"
+    # O '&' no final de cada comando faz eles rodarem ao MESMO TEMPO
+    (wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" && su -c "pm install -r clone$i.apk") &
 done
 
-# Baixa o seu projeto e roda
+# Espera os processos de fundo terminarem antes de seguir para o Python
+wait 
+
+# 5. Baixa o seu projeto e roda
 cd ~
-rm -rf principal  # Remove a pasta antiga se existir
+rm -rf principal
 git clone https://github.com/frogxtrem-sys/principal
 cd principal
 
