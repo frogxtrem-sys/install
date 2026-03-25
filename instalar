@@ -3,7 +3,7 @@
 pkg update -y && pkg upgrade -y
 pkg install python git wget openssl python-psutil -y
 
-pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio
+pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio pyotp
 
 mkdir -p ~/downloads_apks && cd ~/downloads_apks
 for i in {1..4}; do
