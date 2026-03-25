@@ -1,17 +1,22 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
+# Atualiza e instala o básico
 pkg update -y && pkg upgrade -y
 pkg install python git wget openssl python-psutil -y
 
-pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio pyotp
+# Instala bibliotecas (incluindo o gerador de códigos pyotp)
+pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio pyotp --no-cache-dir
 
+# Baixa e instala os 4 clones (usando Root)
 mkdir -p ~/downloads_apks && cd ~/downloads_apks
 for i in {1..4}; do
     wget -q https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk
     su -c "pm install -r $PWD/clone$i.apk"
 done
 
+# Baixa o seu projeto e roda
 cd ~
+rm -rf principal  # Remove a pasta antiga se existir
 git clone https://github.com/frogxtrem-sys/principal
 cd principal
 python 2main.py
