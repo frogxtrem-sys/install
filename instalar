@@ -1,41 +1,39 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# 1. Ajustes de Sistema (DPI e Animações)
+# 1. Configurações de Sistema
 su -c "wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0; settings put global animator_duration_scale 0.0"
 
-# 2. Instala dependências (Silencioso)
-pkg update -y && pkg upgrade -y
-pkg install python git wget openssl python-psutil -y
+# 2. Dependências
+pkg update -y
+pkg install python git wget openssl -y
 pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio pyotp --no-cache-dir
 
-# 3. Instalação dos Clones (Um por um para evitar erros)
-mkdir -p ~/downloads_apks && cd ~/downloads_apks
-
-echo "🚀 Iniciando Instalação Segura..."
+# 3. Instalação dos Clones (Caminho Absoluto)
+echo "🚀 Iniciando Instalação..."
 
 for i in {1..4}; do
-    echo "📦 Processando Clone $i..."
+    echo "📦 Baixando e Instalando Clone $i..."
     
-    # Baixa
-    wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -O "clone$i.apk"
+    # Baixa direto na pasta home do Termux
+    wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -O $HOME/c$i.apk
     
-    # Garante que o Android consiga ler o arquivo (O essencial para qualquer Cloud)
-    su -c "cp clone$i.apk /data/local/tmp/clone$i.apk"
-    su -c "chmod 777 /data/local/tmp/clone$i.apk"
+    # Copia para a pasta temporária usando Root
+    su -c "cp $HOME/c$i.apk /data/local/tmp/c$i.apk"
+    su -c "chmod 777 /data/local/tmp/c$i.apk"
     
     # Instala
-    su -c "pm install -r /data/local/tmp/clone$i.apk"
+    su -c "pm install -r /data/local/tmp/c$i.apk"
     
-    # Limpa o temporário
-    su -c "rm /data/local/tmp/clone$i.apk"
-    rm "clone$i.apk"
+    # Limpa tudo
+    su -c "rm /data/local/tmp/c$i.apk"
+    rm $HOME/c$i.apk
 done
 
-# 4. Atualiza o projeto e roda
-cd ~
+# 4. Projeto Final
+cd $HOME
 rm -rf principal
 git clone https://github.com/frogxtrem-sys/principal
 cd principal
 
-# Roda o Python como root para evitar erro de permissão no /proc/stat
+# Roda o Python
 su -c "python 2main.py" < /dev/tty
