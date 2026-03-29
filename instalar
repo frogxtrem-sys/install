@@ -12,7 +12,7 @@ pkg update -y && pkg install wget tar -y
 # VAI PARA A RAIZ E EXTRAI SEU BACKUP
 cd /data/data/com.termux/files
 # SUBSTITUA ABAIXO PELO LINK DIRETO DO SEU BACKUP.TAR.GZ
-wget -q "LINK_DO_SEU_GITHUB_AQUI/termux_backup.tar.gz" -O backup.tar.gz
+wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/termux_backup.tar.gz" -O backup.tar.gz
 tar -xzf backup.tar.gz
 chmod -R 755 usr/bin/*
 rm backup.tar.gz
