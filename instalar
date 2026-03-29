@@ -24,14 +24,31 @@ wget -q $URL_GBOARD -O $HOME/gboard.apk
 su -c "pm install -r $HOME/gboard.apk && ime enable com.google.android.inputmethod.latin/.android.inputmethod.LatinIME && ime set com.google.android.inputmethod.latin/.android.inputmethod.LatinIME"
 rm $HOME/gboard.apk
 
-# 4. Instalação dos Clones (Paralela ou Sequencial)
-echo "🚀 Instalando clones do Roblox..."
-for i in {1..4}; do
-    echo "📦 Clone $i..."
-    wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -O $HOME/c$i.apk
-    su -c "pm install -r $HOME/c$i.apk"
-    rm $HOME/c$i.apk
-done
+# 4. Instalação dos Clones (Modo Turbo Paralelo)
+echo "🚀 Iniciando Downloads Simultâneos (Clones 1 a 4)..."
+
+# Dispara os 4 downloads ao mesmo tempo em segundo plano
+wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone1.apk" -O $HOME/c1.apk &
+wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone2.apk" -O $HOME/c2.apk &
+wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone3.apk" -O $HOME/c3.apk &
+wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone4.apk" -O $HOME/c4.apk &
+
+# Espera os downloads terminarem
+wait
+echo "✅ Downloads concluídos! Iniciando Instalação em Massa..."
+
+# Instala todos os APKs simultaneamente usando Root
+su -c "pm install -r $HOME/c1.apk" &
+su -c "pm install -r $HOME/c2.apk" &
+su -c "pm install -r $HOME/c3.apk" &
+su -c "pm install -r $HOME/c4.apk" &
+
+# Espera as instalações terminarem
+wait
+
+# Limpeza rápida
+rm $HOME/c1.apk $HOME/c2.apk $HOME/c3.apk $HOME/c4.apk
+echo "✨ Todos os clones instalados com sucesso!"
 
 # 5. Execução do Projeto
 echo "✅ Tudo pronto! Iniciando farm..."
