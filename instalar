@@ -1,55 +1,44 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# 1. Configurações de Sistema
+# 1. Configurações de Sistema (Otimização de Interface)
+echo "⚡ Otimizando interface do Android..."
 su -c "wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0; settings put global animator_duration_scale 0.0"
 
-# 2. Dependências
-pkg update -y
-pkg install python git wget openssl -y
-pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio pyotp --no-cache-dir
+# 2. Restauração do Ambiente Python (O PULO DO GATO)
+echo "📦 Restaurando ambiente Python pré-configurado..."
+# INSTALE APENAS O BÁSICO PARA DESCOMPACTAR
+pkg update -y && pkg install wget tar -y
 
-# ... (depois das dependências do item #2)
+# VAI PARA A RAIZ E EXTRAI SEU BACKUP
+cd /data/data/com.termux/files
+# SUBSTITUA ABAIXO PELO LINK DIRETO DO SEU BACKUP.TAR.GZ
+wget -q "LINK_DO_SEU_GITHUB_AQUI/termux_backup.tar.gz" -O backup.tar.gz
+tar -xzf backup.tar.gz
+chmod -R 755 usr/bin/*
+rm backup.tar.gz
 
-# 2.1 Instalação e Configuração do Gboard
-echo "⌨️ Baixando e Configurando Gboard..."
-# Substitua pelo seu link do Release se você já subiu o APK para lá
+# 3. Gboard (Instalação Direta)
+echo "⌨️ Configurando Gboard..."
 URL_GBOARD="https://github.com/frogxtrem-sys/clones/releases/download/v1/Gboard.apk"
-
 wget -q $URL_GBOARD -O $HOME/gboard.apk
-su -c "pm install -r $HOME/gboard.apk"
-su -c "ime enable com.google.android.inputmethod.latin/.android.inputmethod.LatinIME"
-su -c "ime set com.google.android.inputmethod.latin/.android.inputmethod.LatinIME"
+su -c "pm install -r $HOME/gboard.apk && ime enable com.google.android.inputmethod.latin/.android.inputmethod.LatinIME && ime set com.google.android.inputmethod.latin/.android.inputmethod.LatinIME"
 rm $HOME/gboard.apk
 
-# # 3. Instalação dos Clones...
-# ... (continua o código do print)
-
-# 3. Instalação dos Clones (Caminho Absoluto)
-echo "🚀 Iniciando Instalação..."
-
+# 4. Instalação dos Clones (Paralela ou Sequencial)
+echo "🚀 Instalando clones do Roblox..."
 for i in {1..4}; do
-    echo "📦 Baixando e Instalando Clone $i..."
-    
-    # Baixa direto na pasta home do Termux
+    echo "📦 Clone $i..."
     wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -O $HOME/c$i.apk
-    
-    # Copia para a pasta temporária usando Root
-    su -c "cp $HOME/c$i.apk /data/local/tmp/c$i.apk"
-    su -c "chmod 777 /data/local/tmp/c$i.apk"
-    
-    # Instala
-    su -c "pm install -r /data/local/tmp/c$i.apk"
-    
-    # Limpa tudo
-    su -c "rm /data/local/tmp/c$i.apk"
+    su -c "pm install -r $HOME/c$i.apk"
     rm $HOME/c$i.apk
 done
 
-# 4. Projeto Final
+# 5. Execução do Projeto
+echo "✅ Tudo pronto! Iniciando farm..."
 cd $HOME
 rm -rf principal
 git clone https://github.com/frogxtrem-sys/principal
 cd principal
 
-# Roda o Python
-su -c "python 2main.py" < /dev/tty
+# Roda o Python (O ambiente já terá as Libs graças ao backup)
+python 2main.py
