@@ -57,8 +57,10 @@ echo "✅ TUDO PRONTO! O comando 'go' e o Auto-Boot foram configurados."
 cd $HOME
 rm -rf principal
 git clone https://github.com/frogxtrem-sys/principal
+# ... (depois de clonar o principal)
 cd principal
+echo "🐍 Instalando dependências do arquivo requirements..."
+pip install -r requirements.txt
 
-# Dá prioridade máxima ao processo do Python antes de iniciar
-su -c "renice -n -20 -p $$"
-python3 2main.py
+# Agora o motor vai girar sem engasgar
+python 2main.py
