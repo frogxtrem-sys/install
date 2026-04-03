@@ -1,52 +1,64 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# 1. Configurações de Sistema (Otimização de Interface)
-echo "⚡ Otimizando interface do Android..."
-su -c "wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0; settings put global animator_duration_scale 0.0"
+# 1. Configurações de Sistema (O SEGREDO DA ESTABILIDADE)
+echo "⚡ Otimizando Android para Farm Pesado..."
+su -c "wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0"
+su -c "settings put global settings_enable_monitor_phantom_procs false"
+su -c "settings put global maximize_running_process_limit 100"
+# Trava a CPU no máximo para evitar lag nos clones
+su -c "echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
 
-# 2. Restauração do Ambiente Python (O PULO DO GATO)
+# 2. Restauração do Ambiente Python
 echo "📦 Restaurando ambiente Python pré-configurado..."
-# INSTALE APENAS O BÁSICO PARA DESCOMPACTAR
-pkg update -y && pkg install wget tar -y
-
-# VAI PARA A RAIZ E EXTRAI SEU BACKUP
+pkg update -y && pkg install wget tar axel procps -y
 cd /data/data/com.termux/files
-# SUBSTITUA ABAIXO PELO LINK DIRETO DO SEU BACKUP.TAR.GZ
 wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/termux_backup.tar.gz" -O backup.tar.gz
 tar -xzf backup.tar.gz
 chmod -R 755 usr/bin/*
 rm backup.tar.gz
 
-# 3. Gboard (Instalação Direta)
+# 3. Configurando Teclado Gboard (Sem atrapalhar o script)
 echo "⌨️ Configurando Gboard..."
 URL_GBOARD="https://github.com/frogxtrem-sys/clones/releases/download/v1/Gboard.apk"
 wget -q $URL_GBOARD -O $HOME/gboard.apk
-su -c "pm install -r $HOME/gboard.apk && ime enable com.google.android.inputmethod.latin/.android.inputmethod.LatinIME && ime set com.google.android.inputmethod.latin/.android.inputmethod.LatinIME"
+su -c "pm install -r $HOME/gboard.apk && ime enable com.google.android.inputmethod.latin/.android.inputmethod.latin.LatinIME && ime set com.google.android.inputmethod.latin/.android.inputmethod.latin.LatinIME"
 rm $HOME/gboard.apk
 
-# 4. Instalação dos Clones (Foco em Velocidade de Download)
-echo "🚀 Iniciando Downloads Acelerados (Axel)..."
-
+# 4. Instalação dos Clones (4 contas automáticas)
+echo "🚀 Iniciando Downloads Acelerados dos Clones..."
 for i in {1..4}; do
-    echo "📦 Baixando Clone $i com 10 conexões simultâneas..."
-    # O Axel divide o arquivo em 10 partes e baixa tudo junto
+    echo "📦 Baixando e Instalando Clone $i..."
     axel -n 10 -a "https://github.com/frogxtrem-sys/clones/releases/download/v1/clone$i.apk" -o $HOME/c$i.apk
-    
-    echo "⚙️ Instalando Clone $i..."
     su -c "pm install -r $HOME/c$i.apk"
     rm $HOME/c$i.apk
 done
 
-# Limpeza rápida
-rm $HOME/c1.apk $HOME/c2.apk $HOME/c3.apk $HOME/c4.apk
-echo "✨ Todos os clones instalados com sucesso!"
+# 5. Configuração do Auto-Start (Boot Automático)
+echo "⚙️ Automatizando o Auto-Start (Boot)..."
+mkdir -p ~/.termux/boot
+cat <<EOF > ~/.termux/boot/start_farm.sh
+#!/data/data/com.termux/files/usr/bin/sh
+termux-wake-lock
+sleep 30
+su -c "settings put global settings_enable_monitor_phantom_procs false"
+su -c "echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
+su -c "wm density 160"
+cd /data/data/com.termux/files/home/principal
+python3 2main.py
+EOF
+chmod +x ~/.termux/boot/start_farm.sh
 
-# 5. Execução do Projeto
-echo "✅ Tudo pronto! Iniciando farm..."
+# 6. Preparação do Comando Curto 'go'
+echo "cd /data/data/com.termux/files/home/principal && python3 2main.py" > /data/data/com.termux/files/usr/bin/go
+chmod +x /data/data/com.termux/files/usr/bin/go
+
+# 7. Execução do Projeto
+echo "✅ TUDO PRONTO! O comando 'go' e o Auto-Boot foram configurados."
 cd $HOME
 rm -rf principal
 git clone https://github.com/frogxtrem-sys/principal
 cd principal
 
-# Roda o Python (O ambiente já terá as Libs graças ao backup)
-python 2main.py
+# Dá prioridade máxima ao processo do Python antes de iniciar
+su -c "renice -n -20 -p $$"
+python3 2main.py
