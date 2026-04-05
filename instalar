@@ -1,8 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-pkg update -y && pkg upgrade -y && pkg install python git wget -y && \
-pip install requests pytz pyjwt pycryptodome rich colorama flask discord python-socketio --no-cache-dir
-
 # 1. Configurações de Sistema (O SEGREDO DA ESTABILIDADE)
 echo "⚡ Otimizando Android para Farm Pesado..."
 su -c "wm density 160; settings put global window_animation_scale 0.0; settings put global transition_animation_scale 0.0"
