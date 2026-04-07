@@ -38,13 +38,21 @@ echo "⚙️ Automatizando o Auto-Start (Boot)..."
 mkdir -p ~/.termux/boot
 cat <<EOF > ~/.termux/boot/start_farm.sh
 #!/data/data/com.termux/files/usr/bin/sh
+# 1. Garante que o Termux não durma
 termux-wake-lock
-sleep 30
+
+# 2. Espera o sistema carregar (30s é pouco para o VMOS, pus 45s)
+sleep 45
+
+# 3. Comandos de Performance e Root
 su -c "settings put global settings_enable_monitor_phantom_procs false"
-su -c "echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
 su -c "wm density 160"
+
+# 4. ENTRAR NA PASTA CORRETA (Verifique se é 'principal' ou 'Shouko.dev')
 cd /data/data/com.termux/files/home/principal
-python3 2main.py
+
+# 5. RODAR O PYTHON (O '&' no final é opcional, mas ajuda a não travar o boot)
+python3 2main.py --auto-start
 EOF
 chmod +x ~/.termux/boot/start_farm.sh
 
