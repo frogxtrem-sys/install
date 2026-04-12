@@ -12,10 +12,10 @@ su -c "echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
 echo "📦 Restaurando ambiente Python pré-configurado..."
 pkg update -y && pkg install wget tar axel procps -y
 cd /data/data/com.termux/files
-wget -q "https://github.com/frogxtrem-sys/clones/archive/refs/tags/v1.tar.gz" -O backup.tar.gz
-tar -xzf backup.tar.gz
+wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/termux_backup.tar.gz" -O termux_backup.tar.gz
+tar -xzf termux_backup.tar.gz
 chmod -R 755 usr/bin/*
-rm backup.tar.gz
+rm termux_backup.tar.gz
 
 # 3. Configurando Teclado Gboard (Sem atrapalhar o script)
 echo "⌨️ Configurando Gboard..."
