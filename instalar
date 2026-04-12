@@ -12,7 +12,7 @@ su -c "echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
 echo "📦 Restaurando ambiente Python pré-configurado..."
 pkg update -y && pkg install wget tar axel procps -y
 cd /data/data/com.termux/files
-wget -q "https://github.com/frogxtrem-sys/clones/releases/download/v1/termux_backup.tar.gz" -O backup.tar.gz
+wget -q "https://github.com/frogxtrem-sys/clones/archive/refs/tags/v1.tar.gz" -O backup.tar.gz
 tar -xzf backup.tar.gz
 chmod -R 755 usr/bin/*
 rm backup.tar.gz
@@ -24,6 +24,13 @@ wget -q $URL_GBOARD -O $HOME/gboard.apk
 su -c "pm install -r $HOME/gboard.apk && ime enable com.google.android.inputmethod.latin/.android.inputmethod.latin.LatinIME && ime set com.google.android.inputmethod.latin/.android.inputmethod.latin.LatinIME"
 rm $HOME/gboard.apk
 
+# 3.1 Instalando Termux:Boot (Necessário para o Auto-Start)
+echo "🔄 Instalando Termux:Boot..."
+URL_BOOT="https://github.com/frogxtrem-sys/clones/releases/download/v1/BootTermux.apk"
+wget -q $URL_BOOT -O $HOME/BootTermux.apk
+su -c "pm install -r $HOME/BootTermux.apk"
+rm $HOME/BootTermux.apk
+
 # 4. Instalação dos Clones (4 contas automáticas)
 echo "🚀 Iniciando Downloads Acelerados dos Clones..."
 for i in {1..4}; do
@@ -33,6 +40,14 @@ for i in {1..4}; do
     rm $HOME/c$i.apk
 done
 
+# 4.1 Baixando Configuração do Ragesploit (Para uso posterior no Python)
+echo "📂 Baixando configuração do Ragesploit..."
+URL_RFLD="https://github.com/frogxtrem-sys/clones/releases/download/v1/Configuration.rfld"
+# Salva no Download para o Python copiar para os clones depois
+su -c "mkdir -p /sdcard/Download"
+wget -q "$URL_RFLD" -O /sdcard/Download/Configuration.rfld
+su -c "chmod 777 /sdcard/Download/Configuration.rfld"
+
 # 5. Configuração do Auto-Start (Boot Automático)
 echo "⚙️ Automatizando o Auto-Start (Boot)..."
 mkdir -p ~/.termux/boot
@@ -41,17 +56,17 @@ cat <<EOF > ~/.termux/boot/start_farm.sh
 # 1. Garante que o Termux não durma
 termux-wake-lock
 
-# 2. Espera o sistema carregar (30s é pouco para o VMOS, pus 45s)
+# 2. Espera o sistema carregar (45s para estabilidade no VMOS)
 sleep 45
 
 # 3. Comandos de Performance e Root
 su -c "settings put global settings_enable_monitor_phantom_procs false"
 su -c "wm density 160"
 
-# 4. ENTRAR NA PASTA CORRETA (Verifique se é 'principal' ou 'Shouko.dev')
+# 4. Entrar na pasta correta
 cd /data/data/com.termux/files/home/principal
 
-# 5. RODAR O PYTHON (O '&' no final é opcional, mas ajuda a não travar o boot)
+# 5. Rodar o Python
 python3 2main.py --auto-start
 EOF
 chmod +x ~/.termux/boot/start_farm.sh
@@ -65,10 +80,9 @@ echo "✅ TUDO PRONTO! O comando 'go' e o Auto-Boot foram configurados."
 cd $HOME
 rm -rf principal
 git clone https://github.com/frogxtrem-sys/principal
-# ... (depois de clonar o principal)
 cd principal
 echo "🐍 Instalando dependências do arquivo requirements..."
 pip install -r requirements.txt
 
-# Agora o motor vai girar sem engasgar
-python 2main.py
+# Início do motor
+python3 2main.py
